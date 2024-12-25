@@ -1,15 +1,17 @@
+import "express-async-errors";
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 dotenv.config();
 import NotFound from "./middleware/not-found";
 import errorHandlerMiddleWare from "./middleware/error-handler";
 import jobsRoute from "./routes/jobsRoute";
-import userRoute from "./routes/userRoute";
+import authRout from "./routes/userRoute";
+
 const app = express();
 app.use(express.json());
 
 app.use("/api/v1/jobs", jobsRoute);
-app.use("/api/v1/auth", userRoute);
+app.use("/api/v1/auth", authRout);
 
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({ message: "App is running..." });
