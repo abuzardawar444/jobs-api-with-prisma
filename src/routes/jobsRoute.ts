@@ -5,8 +5,8 @@ import {
   getAllJobs,
   getSingleJob,
   updateJob,
-} from "../controllers/jobs.js";
-import { authMiddleWare } from "../middleware/auth.js";
+} from "../controllers/jobs";
+import { authMiddleWare } from "../middleware/auth";
 
 const router = express.Router();
 

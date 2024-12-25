@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { UnAuthenticatedError } from "../errors/index.js";
+import { UnAuthenticatedError } from "../errors";
 import jwt, { JwtPayload } from "jsonwebtoken";
 export const authMiddleWare = async (
   req: Request,

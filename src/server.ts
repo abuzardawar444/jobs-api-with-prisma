@@ -1,10 +1,10 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 dotenv.config();
-import NotFound from "./middleware/not-found.js";
-import errorHandlerMiddleWare from "./middleware/error-handler.js";
-import jobsRoute from "./routes/jobsRoute.js";
-import userRoute from "./routes/userRoute.js";
+import NotFound from "./middleware/not-found";
+import errorHandlerMiddleWare from "./middleware/error-handler";
+import jobsRoute from "./routes/jobsRoute";
+import userRoute from "./routes/userRoute";
 const app = express();
 app.use(express.json());
 
