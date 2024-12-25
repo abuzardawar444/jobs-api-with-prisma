@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
-    "module": "ES2020",
-    "esModuleInterop": true,
-    "target": "es6",
+    "outDir": "dist",
+    "module": "ESNext",
     "moduleResolution": "node",
-    "sourceMap": true,
-    "outDir": "dist"
+    "target": "ES2020",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["node"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"],
-  "lib": ["es2015"]
+  "exclude": ["node_modules"]
 }
