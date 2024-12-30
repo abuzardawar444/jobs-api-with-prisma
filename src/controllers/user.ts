@@ -17,17 +17,21 @@ export const register = async (req: Request, res: Response) => {
   if (alreadyUser) {
     throw new BadRequestError("Email already exists");
   }
-  const user: { username: string; email: string; password: string } =
-    await db.user.create({
-      data: {
-        username,
-        email,
-        password: hashedPassword,
-        verificationToken,
-        verified: new Date(),
-        updatedAt: new Date(),
-      },
-    });
+  const user: {
+    username: string;
+    email: string;
+    password: string;
+    verificationToken: string;
+  } = await db.user.create({
+    data: {
+      username,
+      email,
+      password: hashedPassword,
+      verificationToken,
+      verified: new Date(),
+      updatedAt: new Date(),
+    },
+  });
   // console.log(user);
   const origin = "http://localhost:3000";
   await sendVerificationEmail({ username, email, origin, verificationToken });
