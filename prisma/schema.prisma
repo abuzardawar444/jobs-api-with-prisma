@@ -14,8 +14,25 @@ datasource db {
 }
 
 model User {
-  id String @id @default (uuid()) @map("_id")
-  username String
-  email String @unique
-  password String
+  id                          String    @id @default(uuid()) @map("_id")
+  username                    String
+  email                       String    @unique
+  password                    String
+  verificationToken           String?
+  isVerified                  Boolean   @default(false)
+  verified                    DateTime
+  passwordTokenExpirationData DateTime?
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime
+  tokens                      Token[]
+}
+
+model Token {
+  id           String  @id @default(uuid()) @map("_id")
+  ip           String
+  userAgent    String
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String @unique
+  refreshToken String
+  isValid      Boolean
 }

@@ -6,11 +6,11 @@ import {
   getSingleJob,
   updateJob,
 } from "../controllers/jobs";
-import { authMiddleWare } from "../middleware/auth";
+import { authenticationMiddleware } from "../middleware/auth";
 
 const router = express.Router();
 
-router.route("/").get(getAllJobs).post(authMiddleWare, createJob);
+router.route("/").get(getAllJobs).post(authenticationMiddleware, createJob);
 router.route("/:id").get(getSingleJob).delete(deleteJob).patch(updateJob);
 
 export default router;

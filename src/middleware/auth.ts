@@ -1,40 +1,47 @@
 import { NextFunction, Request, Response } from "express";
+import { attackCookiesToResponse, isTokenValid } from "../utils/jwt";
 import { UnAuthenticatedError } from "../errors";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import db from "../utils/db";
+import { JwtPayload } from "jsonwebtoken";
 
 declare module "express-serve-static-core" {
   interface Request {
-    user?: JwtPayload;
+    user: JwtPayload;
   }
 }
 
-export const authMiddleWare = async (
+export const authenticationMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    throw new UnAuthenticatedError("Please login to access this route...");
-  }
-  const token = authHeader.split(" ")[1];
-
-  const jwtSecret = process.env.JWT_SECRET;
-  if (!jwtSecret) {
-    throw new UnAuthenticatedError("Please login to access this route");
-  }
-
+  const { refreshToken, accessToken } = req.signedCookies;
   try {
-    const payload = jwt.verify(token, jwtSecret) as JwtPayload;
-    const { username, email, id } = payload as {
-      username: string;
-      email: string;
-      id: string;
-    };
-    req.user = { username, email, id };
+    if (accessToken) {
+      const payload = isTokenValid(accessToken);
+      req.user = payload;
+      return next();
+    }
+    const payload = isTokenValid(refreshToken);
+
+    const existingToken = await db.token.findUnique({
+      where: {
+        userId: payload.user.userId,
+        refreshToken: payload.refreshToken,
+      },
+    });
+    if (!existingToken || !existingToken?.isValid) {
+      throw new UnAuthenticatedError("Authentication Invalid");
+    }
+    console.log(payload);
+    attackCookiesToResponse({
+      res,
+      user: payload.user,
+      refreshToken: existingToken.refreshToken,
+    });
+    req.user = payload;
     next();
   } catch (error) {
-    console.log(error);
-    throw new UnAuthenticatedError("Invalid credentials..");
+    throw new UnAuthenticatedError("Authentication Invalid");
   }
 };

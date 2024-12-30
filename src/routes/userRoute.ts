@@ -1,13 +1,9 @@
 import express from "express";
-import { login, register } from "../controllers/user";
-import {
-  loginSchema,
-  userSchema,
-  validateWithZodSchema,
-} from "../utils/validation";
+import { showCurrentUser } from "../controllers/userController";
+import { authenticationMiddleware } from "../middleware/auth";
+
 const router = express.Router();
 
-router.route("/register").post(validateWithZodSchema(userSchema), register);
-router.route("/login").post(validateWithZodSchema(loginSchema), login);
+router.route("/show-me").get(authenticationMiddleware, showCurrentUser);
 
 export default router;
