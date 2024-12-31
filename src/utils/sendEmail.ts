@@ -4,7 +4,7 @@ import { BadRequestError, CustomAPIError } from "../errors";
 
 import sgMail from "@sendgrid/mail";
 
-const sendEmailEthereal = async ({
+const sendEmail = async ({
   to,
   subject,
   html,
@@ -34,7 +34,7 @@ const sendEmailEthereal = async ({
   }
 };
 
-const sendEmail = async ({
+const sendEmailSendGrid = async ({
   to,
   subject,
   html,

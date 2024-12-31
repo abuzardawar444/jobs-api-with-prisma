@@ -7,6 +7,8 @@ import crypto from "crypto";
 import sendVerificationEmail from "../utils/sendVerificationEmail";
 import { attackCookiesToResponse, createJWT } from "../utils/jwt";
 import { createTokenUser } from "../utils/createTokenUser";
+import sendResetPasswordEmail from "../utils/sendResetPasswordEmail";
+import { createHash } from "../utils/createHash";
 
 export const register = async (req: Request, res: Response) => {
   const { username, email, password } = req.body;
@@ -139,3 +141,74 @@ export const logout = async (req: Request, res: Response) => {
   res.status(StatusCodes.OK).json({ message: "User logged out" });
 };
 
+export const forgotPassword = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  if (!email) {
+    throw new BadRequestError("please provide your email");
+  }
+  const user = await db.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  // console.log(user);
+  if (user) {
+    const passwordToken = crypto.randomBytes(40).toString("hex");
+    const origin = "http://localhost:3000";
+    await sendResetPasswordEmail({
+      passwordToken,
+      origin,
+      email: user.email,
+      username: user.username,
+    });
+    const tenMinutes = 1000 * 60 * 10;
+
+    const passwordTokenExpirationDate = new Date(Date.now() + tenMinutes);
+    await db.user.update({
+      where: { email },
+      data: {
+        passwordToken: createHash(passwordToken),
+        passwordTokenExpirationDate,
+      },
+    });
+  }
+  res.status(StatusCodes.OK).json({ message: user });
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  const { passwordToken, email, password } = req.body;
+  if (!passwordToken || !email || !password) {
+    throw new BadRequestError("Please provide all values");
+  }
+  const user = await db.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  if (!user) {
+    throw new BadRequestError("No user found.");
+  }
+  const hashedPassword = await bcrypt.hash(password, 10);
+  if (user) {
+    const currentDate = new Date();
+    if (
+      user.passwordToken === passwordToken &&
+      user.passwordTokenExpirationDate &&
+      user.passwordTokenExpirationDate > currentDate
+    ) {
+      await db.user.update({
+        where: {
+          email,
+        },
+        data: {
+          password: hashedPassword,
+          passwordToken: null,
+          passwordTokenExpirationDate: null,
+        },
+      });
+    }
+  }
+  res
+    .status(StatusCodes.OK)
+    .json({ message: "Reset Password successfully..." });
+};

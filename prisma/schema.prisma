@@ -21,7 +21,8 @@ model User {
   verificationToken           String
   isVerified                  Boolean   @default(false)
   verified                    DateTime
-  passwordTokenExpirationData DateTime?
+  passwordToken               String?
+  passwordTokenExpirationDate DateTime?
   createdAt                   DateTime  @default(now())
   updatedAt                   DateTime
   tokens                      Token[]
@@ -32,7 +33,7 @@ model Token {
   ip           String
   userAgent    String
   user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String @unique
+  userId       String  @unique
   refreshToken String
   isValid      Boolean
 }
