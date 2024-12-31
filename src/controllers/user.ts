@@ -176,7 +176,11 @@ export const forgotPassword = async (req: Request, res: Response) => {
 };
 
 export const resetPassword = async (req: Request, res: Response) => {
-  const { passwordToken, email, password } = req.body;
+  const {
+    passwordToken,
+    email,
+    password,
+  }: { passwordToken: string; email: string; password: string } = req.body;
   if (!passwordToken || !email || !password) {
     throw new BadRequestError("Please provide all values");
   }
