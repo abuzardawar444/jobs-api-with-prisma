@@ -35,7 +35,7 @@ export const register = async (req: Request, res: Response) => {
     },
   });
   // console.log(user);
-  const origin = "http://localhost:3000";
+  const origin = "http://localhost:5173";
   await sendVerificationEmail({ username, email, origin, verificationToken });
   res.status(StatusCodes.CREATED).json({ user });
 };
@@ -155,7 +155,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
   if (user) {
     const passwordToken = crypto.randomBytes(40).toString("hex");
     const origin = "http://localhost:3000";
-    
+
     await sendResetPasswordEmail({
       passwordToken,
       origin,
