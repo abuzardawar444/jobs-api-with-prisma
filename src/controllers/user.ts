@@ -154,7 +154,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
   // console.log(user);
   if (user) {
     const passwordToken = crypto.randomBytes(40).toString("hex");
-    const origin = "http://localhost:3000";
+    const origin = "http://localhost:5173";
 
     await sendResetPasswordEmail({
       passwordToken,
@@ -183,6 +183,7 @@ export const resetPassword = async (req: Request, res: Response) => {
     email,
     password,
   }: { passwordToken: string; email: string; password: string } = req.body;
+  console.log(passwordToken, email, password);
   if (!passwordToken || !email || !password) {
     throw new BadRequestError("Please provide all values");
   }
@@ -198,7 +199,7 @@ export const resetPassword = async (req: Request, res: Response) => {
   if (user) {
     const currentDate = new Date();
     if (
-      user.passwordToken === passwordToken &&
+      user.passwordToken === createHash(passwordToken) &&
       user.passwordTokenExpirationDate &&
       user.passwordTokenExpirationDate > currentDate
     ) {

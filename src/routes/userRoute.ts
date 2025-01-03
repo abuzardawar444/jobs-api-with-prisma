@@ -7,6 +7,6 @@ import { authenticationMiddleware } from "../middleware/auth";
 
 const router = express.Router();
 
-router.route("/show-me").get(authenticationMiddleware, showCurrentUser);
+router.route("/current-user").get(authenticationMiddleware, showCurrentUser);
 router.route("/password").patch(authenticationMiddleware, updateUserPassword);
 export default router;
